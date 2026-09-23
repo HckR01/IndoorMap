@@ -1,68 +1,58 @@
 export function findShortestPath(nodes, edges, startNodeId, endNodeId) {
-  const distances = {};
-  const previous = {};
-  const unvisited = new Set();
+  const ids = new Set(nodes.map((node) => node.id));
 
-  nodes.forEach((node) => {
-    distances[node.id] = Infinity;
-    previous[node.id] = null;
-    unvisited.add(node.id);
-  });
+  if (!ids.has(startNodeId) || !ids.has(endNodeId)) {
+    return { path: [], distance: Infinity };
+  }
+
+  const distances = Object.fromEntries(nodes.map((node) => [node.id, Infinity]));
+  const previous = Object.fromEntries(nodes.map((node) => [node.id, null]));
+  const unvisited = new Set(ids);
 
   distances[startNodeId] = 0;
 
-  while (unvisited.size > 0) {
-    let currentNodeId = null;
-    let smallestDistance = Infinity;
+  while (unvisited.size) {
+    let current = null;
+    let smallest = Infinity;
 
-    for (const nodeId of unvisited) {
-      if (distances[nodeId] < smallestDistance) {
-        smallestDistance = distances[nodeId];
-        currentNodeId = nodeId;
+    for (const id of unvisited) {
+      if (distances[id] < smallest) {
+        smallest = distances[id];
+        current = id;
       }
     }
 
-    if (currentNodeId === null) {
-      break;
-    }
+    if (current === null || smallest === Infinity) break;
+    if (current === endNodeId) break;
 
-    if (currentNodeId === endNodeId) {
-      break;
-    }
+    unvisited.delete(current);
 
-    unvisited.delete(currentNodeId);
+    for (const edge of edges) {
+      if (edge.from !== current && edge.to !== current) continue;
 
-    const connectedEdges = edges.filter(
-      (edge) => edge.from === currentNodeId || edge.to === currentNodeId,
-    );
+      const neighbor = edge.from === current ? edge.to : edge.from;
+      if (!unvisited.has(neighbor)) continue;
 
-    for (const edge of connectedEdges) {
-      const neighborId = edge.from === currentNodeId ? edge.to : edge.from;
+      const candidate = distances[current] + Number(edge.weight || 1);
 
-      if (!unvisited.has(neighborId)) {
-        continue;
-      }
-
-      const newDistance = distances[currentNodeId] + edge.weight;
-
-      if (newDistance < distances[neighborId]) {
-        distances[neighborId] = newDistance;
-        previous[neighborId] = currentNodeId;
+      if (candidate < distances[neighbor]) {
+        distances[neighbor] = candidate;
+        previous[neighbor] = current;
       }
     }
   }
 
   if (distances[endNodeId] === Infinity) {
-    return [];
+    return { path: [], distance: Infinity };
   }
 
   const path = [];
-  let current = endNodeId;
+  let cursor = endNodeId;
 
-  while (current) {
-    path.unshift(current);
-    current = previous[current];
+  while (cursor) {
+    path.unshift(cursor);
+    cursor = previous[cursor];
   }
 
-  return path;
+  return { path, distance: distances[endNodeId] };
 }
