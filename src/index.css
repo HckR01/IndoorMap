@@ -641,3 +641,77 @@ button {
     min-height: 34px;
   }
 }
+
+
+.floor-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.floor-picker select {
+  min-height: 38px;
+  padding: 0 34px 0 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 11px;
+  background: #ffffff;
+  color: #0f172a;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0;
+  cursor: pointer;
+}
+
+.status-card {
+  padding: 18px;
+  border: 1px solid #dbe3ee;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #475569;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.07);
+}
+
+.status-error {
+  border-color: #fecaca;
+  background: #fff7f7;
+  color: #991b1b;
+}
+
+.map-placeholder {
+  display: grid;
+  place-items: center;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.legend-start {
+  background: #2563eb;
+  border-radius: 50% !important;
+}
+
+.legend-destination {
+  background: #ef4444;
+  border-radius: 50% !important;
+}
+
+.legend-route {
+  width: 18px !important;
+  height: 5px !important;
+  background: #2563eb;
+  border-radius: 999px !important;
+}
+
+@media (max-width: 560px) {
+  .floor-picker span {
+    display: none;
+  }
+
+  .floor-picker select {
+    max-width: 170px;
+  }
+}
