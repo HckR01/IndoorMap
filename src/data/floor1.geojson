@@ -3,108 +3,808 @@
   "features": [
     {
       "type": "Feature",
-      "properties": {"id":"C-MAIN","name":"Main Corridor","category":"corridor"},
-      "geometry": {"type":"Polygon","coordinates":[[[0,0.00048],[0.00142,0.00048],[0.00142,0.00064],[0,0.00064],[0,0.00048]]]}
+      "properties": {
+        "id": "C-MAIN",
+        "name": "Main Corridor",
+        "category": "corridor"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0,
+              0.00048
+            ],
+            [
+              0.00142,
+              0.00048
+            ],
+            [
+              0.00142,
+              0.00064
+            ],
+            [
+              0,
+              0.00064
+            ],
+            [
+              0,
+              0.00048
+            ]
+          ]
+        ]
+      }
     },
     {
       "type": "Feature",
-      "properties": {"id":"C-BRANCH","name":"North Corridor","category":"corridor"},
-      "geometry": {"type":"Polygon","coordinates":[[[0.00065,0.00064],[0.00081,0.00064],[0.00081,0.00172],[0.00065,0.00172],[0.00065,0.00064]]]}
+      "properties": {
+        "id": "C-BRANCH",
+        "name": "North Corridor",
+        "category": "corridor"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.00065,
+              0.00064
+            ],
+            [
+              0.00081,
+              0.00064
+            ],
+            [
+              0.00081,
+              0.00172
+            ],
+            [
+              0.00065,
+              0.00172
+            ],
+            [
+              0.00065,
+              0.00064
+            ]
+          ]
+        ]
+      }
     },
     {
-      "type":"Feature",
-      "properties":{"id":"D101","name":"Reception","category":"reception"},
-      "geometry":{"type":"Polygon","coordinates":[[[0,0.00008],[0.00016,0.00008],[0.00016,0.00042],[0,0.00042],[0,0.00008]]]}
+      "type": "Feature",
+      "properties": {
+        "id": "C-LIFT",
+        "name": "Lift Access Corridor",
+        "category": "corridor"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.00081,
+              0.00116
+            ],
+            [
+              0.00118,
+              0.00116
+            ],
+            [
+              0.00118,
+              0.00125
+            ],
+            [
+              0.00081,
+              0.00125
+            ],
+            [
+              0.00081,
+              0.00116
+            ]
+          ]
+        ]
+      }
     },
     {
-      "type":"Feature",
-      "properties":{"id":"D102","name":"Finance","category":"office"},
-      "geometry":{"type":"Polygon","coordinates":[[[0.00022,0.00008],[0.00038,0.00008],[0.00038,0.00042],[0.00022,0.00042],[0.00022,0.00008]]]}
+      "type": "Feature",
+      "properties": {
+        "id": "C-STAIR",
+        "name": "Stairs Access Corridor",
+        "category": "corridor"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.00081,
+              0.00142
+            ],
+            [
+              0.00118,
+              0.00142
+            ],
+            [
+              0.00118,
+              0.00151
+            ],
+            [
+              0.00081,
+              0.00151
+            ],
+            [
+              0.00081,
+              0.00142
+            ]
+          ]
+        ]
+      }
     },
     {
-      "type":"Feature",
-      "properties":{"id":"D103","name":"HR","category":"office"},
-      "geometry":{"type":"Polygon","coordinates":[[[0.00044,0.00008],[0.00060,0.00008],[0.00060,0.00042],[0.00044,0.00042],[0.00044,0.00008]]]}
+      "type": "Feature",
+      "properties": {
+        "id": "D101",
+        "name": "Reception",
+        "category": "reception"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0,
+              0.00008
+            ],
+            [
+              0.00016,
+              0.00008
+            ],
+            [
+              0.00016,
+              0.00042
+            ],
+            [
+              0,
+              0.00042
+            ],
+            [
+              0,
+              0.00008
+            ]
+          ]
+        ]
+      }
     },
     {
-      "type":"Feature",
-      "properties":{"id":"D104","name":"Engineering","category":"office"},
-      "geometry":{"type":"Polygon","coordinates":[[[0.00082,0.00008],[0.00098,0.00008],[0.00098,0.00042],[0.00082,0.00042],[0.00082,0.00008]]]}
+      "type": "Feature",
+      "properties": {
+        "id": "D102",
+        "name": "Finance",
+        "category": "office"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.00022,
+              0.00008
+            ],
+            [
+              0.00038,
+              0.00008
+            ],
+            [
+              0.00038,
+              0.00042
+            ],
+            [
+              0.00022,
+              0.00042
+            ],
+            [
+              0.00022,
+              0.00008
+            ]
+          ]
+        ]
+      }
     },
     {
-      "type":"Feature",
-      "properties":{"id":"D105","name":"Operations","category":"office"},
-      "geometry":{"type":"Polygon","coordinates":[[[0.00104,0.00008],[0.00120,0.00008],[0.00120,0.00042],[0.00104,0.00042],[0.00104,0.00008]]]}
+      "type": "Feature",
+      "properties": {
+        "id": "D103",
+        "name": "HR",
+        "category": "office"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.00044,
+              0.00008
+            ],
+            [
+              0.0006,
+              0.00008
+            ],
+            [
+              0.0006,
+              0.00042
+            ],
+            [
+              0.00044,
+              0.00042
+            ],
+            [
+              0.00044,
+              0.00008
+            ]
+          ]
+        ]
+      }
     },
     {
-      "type":"Feature",
-      "properties":{"id":"D106","name":"Support","category":"office"},
-      "geometry":{"type":"Polygon","coordinates":[[[0.00126,0.00008],[0.00142,0.00008],[0.00142,0.00042],[0.00126,0.00042],[0.00126,0.00008]]]}
+      "type": "Feature",
+      "properties": {
+        "id": "D104",
+        "name": "Engineering",
+        "category": "office"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.00082,
+              0.00008
+            ],
+            [
+              0.00098,
+              0.00008
+            ],
+            [
+              0.00098,
+              0.00042
+            ],
+            [
+              0.00082,
+              0.00042
+            ],
+            [
+              0.00082,
+              0.00008
+            ]
+          ]
+        ]
+      }
     },
     {
-      "type":"Feature",
-      "properties":{"id":"D107","name":"Sales","category":"office"},
-      "geometry":{"type":"Polygon","coordinates":[[[0,0.00070],[0.00016,0.00070],[0.00016,0.00104],[0,0.00104],[0,0.00070]]]}
+      "type": "Feature",
+      "properties": {
+        "id": "D105",
+        "name": "Operations",
+        "category": "office"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.00104,
+              0.00008
+            ],
+            [
+              0.0012,
+              0.00008
+            ],
+            [
+              0.0012,
+              0.00042
+            ],
+            [
+              0.00104,
+              0.00042
+            ],
+            [
+              0.00104,
+              0.00008
+            ]
+          ]
+        ]
+      }
     },
     {
-      "type":"Feature",
-      "properties":{"id":"D108","name":"Marketing","category":"office"},
-      "geometry":{"type":"Polygon","coordinates":[[[0.00022,0.00070],[0.00038,0.00070],[0.00038,0.00104],[0.00022,0.00104],[0.00022,0.00070]]]}
+      "type": "Feature",
+      "properties": {
+        "id": "D106",
+        "name": "Support",
+        "category": "office"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.00126,
+              0.00008
+            ],
+            [
+              0.00142,
+              0.00008
+            ],
+            [
+              0.00142,
+              0.00042
+            ],
+            [
+              0.00126,
+              0.00042
+            ],
+            [
+              0.00126,
+              0.00008
+            ]
+          ]
+        ]
+      }
     },
     {
-      "type":"Feature",
-      "properties":{"id":"D109","name":"Design Studio","category":"office"},
-      "geometry":{"type":"Polygon","coordinates":[[[0.00044,0.00070],[0.00060,0.00070],[0.00060,0.00104],[0.00044,0.00104],[0.00044,0.00070]]]}
+      "type": "Feature",
+      "properties": {
+        "id": "D107",
+        "name": "Sales",
+        "category": "office"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0,
+              0.0007
+            ],
+            [
+              0.00016,
+              0.0007
+            ],
+            [
+              0.00016,
+              0.00104
+            ],
+            [
+              0,
+              0.00104
+            ],
+            [
+              0,
+              0.0007
+            ]
+          ]
+        ]
+      }
     },
     {
-      "type":"Feature",
-      "properties":{"id":"D110","name":"Meeting Room A","category":"meeting"},
-      "geometry":{"type":"Polygon","coordinates":[[[0.00082,0.00070],[0.00098,0.00070],[0.00098,0.00104],[0.00082,0.00104],[0.00082,0.00070]]]}
+      "type": "Feature",
+      "properties": {
+        "id": "D108",
+        "name": "Marketing",
+        "category": "office"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.00022,
+              0.0007
+            ],
+            [
+              0.00038,
+              0.0007
+            ],
+            [
+              0.00038,
+              0.00104
+            ],
+            [
+              0.00022,
+              0.00104
+            ],
+            [
+              0.00022,
+              0.0007
+            ]
+          ]
+        ]
+      }
     },
     {
-      "type":"Feature",
-      "properties":{"id":"D111","name":"Meeting Room B","category":"meeting"},
-      "geometry":{"type":"Polygon","coordinates":[[[0.00104,0.00070],[0.00120,0.00070],[0.00120,0.00104],[0.00104,0.00104],[0.00104,0.00070]]]}
+      "type": "Feature",
+      "properties": {
+        "id": "D109",
+        "name": "Design Studio",
+        "category": "office"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.00044,
+              0.0007
+            ],
+            [
+              0.0006,
+              0.0007
+            ],
+            [
+              0.0006,
+              0.00104
+            ],
+            [
+              0.00044,
+              0.00104
+            ],
+            [
+              0.00044,
+              0.0007
+            ]
+          ]
+        ]
+      }
     },
     {
-      "type":"Feature",
-      "properties":{"id":"D112","name":"Director Office","category":"office"},
-      "geometry":{"type":"Polygon","coordinates":[[[0.00126,0.00070],[0.00142,0.00070],[0.00142,0.00104],[0.00126,0.00104],[0.00126,0.00070]]]}
+      "type": "Feature",
+      "properties": {
+        "id": "D110",
+        "name": "Meeting Room A",
+        "category": "meeting"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.00082,
+              0.0007
+            ],
+            [
+              0.00098,
+              0.0007
+            ],
+            [
+              0.00098,
+              0.00104
+            ],
+            [
+              0.00082,
+              0.00104
+            ],
+            [
+              0.00082,
+              0.0007
+            ]
+          ]
+        ]
+      }
     },
     {
-      "type":"Feature",
-      "properties":{"id":"D113","name":"Conference Room","category":"meeting"},
-      "geometry":{"type":"Polygon","coordinates":[[[0.00035,0.00110],[0.00061,0.00110],[0.00061,0.00134],[0.00035,0.00134],[0.00035,0.00110]]]}
+      "type": "Feature",
+      "properties": {
+        "id": "D111",
+        "name": "Meeting Room B",
+        "category": "meeting"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.00104,
+              0.0007
+            ],
+            [
+              0.0012,
+              0.0007
+            ],
+            [
+              0.0012,
+              0.00104
+            ],
+            [
+              0.00104,
+              0.00104
+            ],
+            [
+              0.00104,
+              0.0007
+            ]
+          ]
+        ]
+      }
     },
     {
-      "type":"Feature",
-      "properties":{"id":"D114","name":"Training Room","category":"meeting"},
-      "geometry":{"type":"Polygon","coordinates":[[[0.00085,0.00110],[0.00111,0.00110],[0.00111,0.00134],[0.00085,0.00134],[0.00085,0.00110]]]}
+      "type": "Feature",
+      "properties": {
+        "id": "D112",
+        "name": "Director Office",
+        "category": "office"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.00126,
+              0.0007
+            ],
+            [
+              0.00142,
+              0.0007
+            ],
+            [
+              0.00142,
+              0.00104
+            ],
+            [
+              0.00126,
+              0.00104
+            ],
+            [
+              0.00126,
+              0.0007
+            ]
+          ]
+        ]
+      }
     },
     {
-      "type":"Feature",
-      "properties":{"id":"D115","name":"Pantry","category":"facility"},
-      "geometry":{"type":"Polygon","coordinates":[[[0.00035,0.00140],[0.00061,0.00140],[0.00061,0.00168],[0.00035,0.00168],[0.00035,0.00140]]]}
+      "type": "Feature",
+      "properties": {
+        "id": "D113",
+        "name": "Conference Room",
+        "category": "meeting"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.00035,
+              0.0011
+            ],
+            [
+              0.00061,
+              0.0011
+            ],
+            [
+              0.00061,
+              0.00134
+            ],
+            [
+              0.00035,
+              0.00134
+            ],
+            [
+              0.00035,
+              0.0011
+            ]
+          ]
+        ]
+      }
     },
     {
-      "type":"Feature",
-      "properties":{"id":"D116","name":"Washroom","category":"facility"},
-      "geometry":{"type":"Polygon","coordinates":[[[0.00085,0.00140],[0.00111,0.00140],[0.00111,0.00168],[0.00085,0.00168],[0.00085,0.00140]]]}
+      "type": "Feature",
+      "properties": {
+        "id": "D114",
+        "name": "Training Room",
+        "category": "meeting"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.00085,
+              0.0011
+            ],
+            [
+              0.00111,
+              0.0011
+            ],
+            [
+              0.00111,
+              0.00134
+            ],
+            [
+              0.00085,
+              0.00134
+            ],
+            [
+              0.00085,
+              0.0011
+            ]
+          ]
+        ]
+      }
     },
     {
-      "type":"Feature",
-      "properties":{"id":"LIFT-1","name":"Lift","category":"facility"},
-      "geometry":{"type":"Polygon","coordinates":[[[0.00118,0.00110],[0.00134,0.00110],[0.00134,0.00130],[0.00118,0.00130],[0.00118,0.00110]]]}
+      "type": "Feature",
+      "properties": {
+        "id": "D115",
+        "name": "Pantry",
+        "category": "facility"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.00035,
+              0.0014
+            ],
+            [
+              0.00061,
+              0.0014
+            ],
+            [
+              0.00061,
+              0.00168
+            ],
+            [
+              0.00035,
+              0.00168
+            ],
+            [
+              0.00035,
+              0.0014
+            ]
+          ]
+        ]
+      }
     },
     {
-      "type":"Feature",
-      "properties":{"id":"STAIR-1","name":"Stairs","category":"facility"},
-      "geometry":{"type":"Polygon","coordinates":[[[0.00118,0.00136],[0.00134,0.00136],[0.00134,0.00156],[0.00118,0.00156],[0.00118,0.00136]]]}
+      "type": "Feature",
+      "properties": {
+        "id": "D116",
+        "name": "Washroom",
+        "category": "facility"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.00085,
+              0.0014
+            ],
+            [
+              0.00111,
+              0.0014
+            ],
+            [
+              0.00111,
+              0.00168
+            ],
+            [
+              0.00085,
+              0.00168
+            ],
+            [
+              0.00085,
+              0.0014
+            ]
+          ]
+        ]
+      }
     },
     {
-      "type":"Feature",
-      "properties":{"id":"EXIT-1","name":"Fire Exit","category":"emergency"},
-      "geometry":{"type":"Polygon","coordinates":[[[0.00142,0.00048],[0.00150,0.00048],[0.00150,0.00064],[0.00142,0.00064],[0.00142,0.00048]]]}
+      "type": "Feature",
+      "properties": {
+        "id": "LIFT-1",
+        "name": "Lift",
+        "category": "facility"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.00118,
+              0.0011
+            ],
+            [
+              0.00134,
+              0.0011
+            ],
+            [
+              0.00134,
+              0.0013
+            ],
+            [
+              0.00118,
+              0.0013
+            ],
+            [
+              0.00118,
+              0.0011
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "STAIR-1",
+        "name": "Stairs",
+        "category": "facility"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.00118,
+              0.00136
+            ],
+            [
+              0.00134,
+              0.00136
+            ],
+            [
+              0.00134,
+              0.00156
+            ],
+            [
+              0.00118,
+              0.00156
+            ],
+            [
+              0.00118,
+              0.00136
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "EXIT-1",
+        "name": "Fire Exit",
+        "category": "emergency"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.00142,
+              0.00048
+            ],
+            [
+              0.0015,
+              0.00048
+            ],
+            [
+              0.0015,
+              0.00064
+            ],
+            [
+              0.00142,
+              0.00064
+            ],
+            [
+              0.00142,
+              0.00048
+            ]
+          ]
+        ]
+      }
     }
   ]
 }
