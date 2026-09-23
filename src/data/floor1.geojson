@@ -1,0 +1,85 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "D101",
+        "name": "Office D101",
+        "category": "office"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [0, 0],
+            [0.001, 0],
+            [0.001, 0.001],
+            [0, 0.001],
+            [0, 0]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "D102",
+        "name": "Office D102",
+        "category": "office"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [0.0012, 0],
+            [0.0022, 0],
+            [0.0022, 0.001],
+            [0.0012, 0.001],
+            [0.0012, 0]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "D103",
+        "name": "Meeting Room D103",
+        "category": "meeting"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [0.0024, 0],
+            [0.0035, 0],
+            [0.0035, 0.001],
+            [0.0024, 0.001],
+            [0.0024, 0]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "CORRIDOR-1",
+        "name": "Main Corridor",
+        "category": "corridor"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [0, -0.0004],
+            [0.0035, -0.0004],
+            [0.0035, -0.0001],
+            [0, -0.0001],
+            [0, -0.0004]
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "id": "D101",
+    "name": "Office D101",
+    "category": "office",
+    "floor": 1,
+    "nodeId": "N1"
+  },
+  {
+    "id": "D102",
+    "name": "Office D102",
+    "category": "office",
+    "floor": 1,
+    "nodeId": "N2"
+  },
+  {
+    "id": "D103",
+    "name": "Meeting Room D103",
+    "category": "meeting",
+    "floor": 1,
+    "nodeId": "N3"
+  }
+]

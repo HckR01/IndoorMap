@@ -1,6 +1,10 @@
+import { useState } from "react";
 import IndoorMap from "../components/map/IndoorMap";
+import SearchPanel from "../components/search/SearchPanel";
 
 function MapPage() {
+  const [routeData, setRouteData] = useState(null);
+
   return (
     <main
       style={{
@@ -42,7 +46,9 @@ function MapPage() {
           padding: "16px",
         }}
       >
-        <IndoorMap />
+        <SearchPanel onRouteFound={setRouteData} />
+
+        <IndoorMap routeData={routeData} />
       </section>
     </main>
   );
