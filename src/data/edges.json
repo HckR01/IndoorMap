@@ -5,8 +5,12 @@
   {"from":"N4","to":"N5","weight":10},
   {"from":"N5","to":"N6","weight":12},
   {"from":"N6","to":"N7","weight":12},
+  {"from":"N7","to":"N14","weight":5},
   {"from":"N4","to":"N8","weight":18},
   {"from":"N8","to":"N9","weight":20},
   {"from":"N9","to":"N10","weight":18},
-  {"from":"N10","to":"N11","weight":9}
+  {"from":"N10","to":"N11","weight":9},
+  {"from":"N9","to":"N12","weight":25},
+  {"from":"N10","to":"N13","weight":25},
+  {"from":"N12","to":"N13","weight":15}
 ]
