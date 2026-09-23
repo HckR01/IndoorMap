@@ -94,6 +94,64 @@ function IndoorMap({ floorData, routeData }) {
         paint: {
           "raster-opacity": 1,
           "raster-fade-duration": 0,
+          "raster-resampling": "nearest",
+        },
+      });
+
+      const labelFeatures = floorData.locations
+        .filter((location) => location.labelCoordinate)
+        .map((location) => ({
+          type: "Feature",
+          properties: {
+            id: location.id,
+            label: location.room
+              ? `${location.name}\nRoom ${location.room}`
+              : location.name,
+            type: location.type,
+          },
+          geometry: {
+            type: "Point",
+            coordinates: location.labelCoordinate,
+          },
+        }));
+
+      map.addSource("floor-labels", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: labelFeatures,
+        },
+      });
+
+      map.addLayer({
+        id: "floor-location-labels",
+        type: "symbol",
+        source: "floor-labels",
+        minzoom: 14.2,
+        layout: {
+          "text-field": ["get", "label"],
+          "text-size": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            14.2,
+            10,
+            17,
+            12,
+            20,
+            15
+          ],
+          "text-anchor": "center",
+          "text-line-height": 1.05,
+          "text-allow-overlap": false,
+          "text-ignore-placement": false,
+          "text-padding": 3,
+        },
+        paint: {
+          "text-color": "#0f172a",
+          "text-halo-color": "rgba(255,255,255,0.96)",
+          "text-halo-width": 2,
+          "text-halo-blur": 0.5,
         },
       });
 
