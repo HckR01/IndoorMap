@@ -1,1 +1,21 @@
-{"name":"indoor-map-app","version":"1.0.0","main":"vite.config.js","scripts":{"test":"echo \"Error: no test specified\" && exit 1"},"keywords":[],"author":"","license":"ISC","description":"","devDependencies":{"@vitejs/plugin-react":"^6.1.1","vite":"^8.3.0"},"dependencies":{"react":"^19.3.0","react-dom":"^19.3.0"}}
+{
+  "name": "indoor-map",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@turf/turf": "^7.2.0",
+    "maplibre-gl": "^6.11.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.0.4",
+    "vite": "^7.1.7"
+  }
+}
