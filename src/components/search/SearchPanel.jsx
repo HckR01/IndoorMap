@@ -1,8 +1,11 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import rooms from "../../data/rooms.json";
 import { useRouteFinder } from "../../hooks/useRouteFinder";
 
 function RoomInput({ label, value, onChange, placeholder }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const fieldRef = useRef(null);
+
   const suggestions = useMemo(() => {
     const query = value.trim().toLowerCase();
     if (!query) return [];
@@ -14,31 +17,85 @@ function RoomInput({ label, value, onChange, placeholder }) {
       .slice(0, 6);
   }, [value]);
 
+  const exactRoomSelected = rooms.some(
+    (room) => room.id.toLowerCase() === value.trim().toLowerCase(),
+  );
+
+  const selectRoom = (room) => {
+    onChange(room.id);
+    setIsOpen(false);
+  };
+
+  const handleChange = (event) => {
+    onChange(event.target.value);
+    setIsOpen(true);
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Escape") {
+      setIsOpen(false);
+      event.currentTarget.blur();
+      return;
+    }
+
+    if (
+      event.key === "Enter" &&
+      isOpen &&
+      suggestions.length > 0 &&
+      !exactRoomSelected
+    ) {
+      event.preventDefault();
+      selectRoom(suggestions[0]);
+    }
+  };
+
   return (
-    <div className="route-field">
+    <div
+      ref={fieldRef}
+      className="route-field"
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          setIsOpen(false);
+        }
+      }}
+    >
       <label>{label}</label>
+
       <input
         type="text"
         value={value}
-        onChange={(event) => onChange(event.target.value)}
+        onChange={handleChange}
+        onFocus={() => {
+          if (!exactRoomSelected && value.trim()) {
+            setIsOpen(true);
+          }
+        }}
+        onKeyDown={handleKeyDown}
         placeholder={placeholder}
         autoComplete="off"
+        aria-expanded={isOpen && suggestions.length > 0 && !exactRoomSelected}
+        aria-autocomplete="list"
       />
 
-      {suggestions.length > 0 && value.trim() !== "" && (
-        <div className="suggestions" role="listbox">
-          {suggestions.map((room) => (
-            <button
-              key={room.id}
-              type="button"
-              onClick={() => onChange(room.id)}
-            >
-              <span>{room.id}</span>
-              <small>{room.name}</small>
-            </button>
-          ))}
-        </div>
-      )}
+      {isOpen &&
+        !exactRoomSelected &&
+        suggestions.length > 0 &&
+        value.trim() !== "" && (
+          <div className="suggestions" role="listbox">
+            {suggestions.map((room) => (
+              <button
+                key={room.id}
+                type="button"
+                role="option"
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={() => selectRoom(room)}
+              >
+                <span>{room.id}</span>
+                <small>{room.name}</small>
+              </button>
+            ))}
+          </div>
+        )}
     </div>
   );
 }
@@ -88,6 +145,7 @@ function SearchPanel({ onRouteFound, onClearRoute }) {
           <span className="eyebrow">Floor 1</span>
           <h2>Indoor directions</h2>
         </div>
+
         <button className="clear-button" type="button" onClick={handleClear}>
           Clear
         </button>
@@ -107,6 +165,7 @@ function SearchPanel({ onRouteFound, onClearRoute }) {
             onChange={setStart}
             placeholder="Room number or name"
           />
+
           <RoomInput
             label="Destination"
             value={destination}
