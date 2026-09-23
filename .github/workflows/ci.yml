@@ -1,4 +1,5 @@
 name: Build
+# Verifies the latest IndoorMap prototype
 
 on:
   push:
