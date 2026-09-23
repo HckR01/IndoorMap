@@ -1,48 +1,73 @@
 # IndoorMap
 
-A responsive indoor navigation prototype built with React, Vite, and MapLibre GL JS.
+IndoorMap is a React + MapLibre indoor-navigation prototype that can generate a navigable floor from a floor-plan image instead of requiring hand-written GeoJSON and route nodes.
 
-## Current prototype
+## Current result
 
-- Interactive 2.5D office floor
-- Pan, zoom, rotate, and pitch controls
-- Room number/name search
-- Start and destination selection
-- Dijkstra shortest-path routing
-- Blue route line with start/destination markers
-- Clickable rooms
-- Responsive mobile and desktop layout
-- JSON/GeoJSON-based map data
-- Prototype contains 16 searchable rooms plus lift, stairs, and fire exit
+The repository now includes the supplied **Level 24 commercial-office floor plan** as an imported demo.
 
-## Run locally
+Current features:
+
+- real floor-plan image rendered inside MapLibre
+- pan, zoom, rotate, north reset, 2D/3D tilt, and fit-floor controls
+- OCR-generated searchable room/company destinations
+- searchable lift, stairs, facilities, and emergency POIs
+- start/destination autocomplete
+- corridor-based A* routing
+- blue route line constrained to the detected walkable corridor grid
+- start and destination markers
+- responsive desktop/mobile UI
+- floor selector driven by `public/floors/manifest.json`
+- automated image-to-navigation importer for future JPG/PNG floor plans
+- GitHub Actions production-build verification
+
+## Run the app
 
 ```bash
 npm install
 npm run dev
 ```
 
-## Production build
+A useful demo route is:
+
+- Start: `TechSolutions`
+- Destination: `Lift A`
+
+You can also search for `Stairs`, `Nexus Media`, `Boardroom`, `Toilets`, room numbers, and other OCR-detected locations.
+
+## Import another floor automatically
+
+One-time Python setup:
 
 ```bash
-npm run build
-npm run preview
+pip install -r floor-importer/requirements.txt
 ```
 
-## Test route
+Then:
 
-Use:
+```bash
+npm run import:floor -- --image "C:\maps\floor25.png" --floor 25 --name "Level 25"
+```
 
-- Start: `D101`
-- Destination: `D116`
+The importer creates/updates:
 
-The route should travel along the main corridor and turn north toward the washroom.
+```text
+public/floors/
+  manifest.json
+  floor25.webp
+  floor25.json
+```
 
-## Map data
+No React code needs to be edited. The app reads the manifest and loads the new floor automatically.
 
-- `src/data/floor1.geojson` — room and corridor geometry
-- `src/data/rooms.json` — searchable rooms and doorway locations
-- `src/data/nodes.json` — navigation nodes
-- `src/data/edges.json` — walking graph connections
+See `floor-importer/README.md` for details.
 
-This floor is sample data for the prototype. It can later be replaced with a traced real office JPG/blueprint.
+## How routing works
+
+The importer uses OCR to detect destinations and computer vision to identify the main corridor/core region. The corridor becomes a compact walkable grid. Destinations are snapped to the nearest walkable corridor cell, and the browser runs A* between those cells.
+
+This replaces the old hand-written room/node/edge prototype and prevents the intended route from simply drawing straight through room walls.
+
+## Production note
+
+Generated data is a draft. Verify doors, accessible routes, lifts/stairs, and emergency exits before using a map operationally.
