@@ -6,21 +6,19 @@ function RouteInfo({ routeData }) {
       <div className="route-info-main">
         <span className="route-badge">Route ready</span>
         <strong>
-          {routeData.startRoom.id} → {routeData.destinationRoom.id}
+          {routeData.startLocation.name} → {routeData.destinationLocation.name}
         </strong>
-        <span>
-          {routeData.startRoom.name} to {routeData.destinationRoom.name}
-        </span>
+        <span>Floor {routeData.floor} · corridor-based indoor path</span>
       </div>
 
       <div className="route-stats">
         <div>
-          <strong>{routeData.distance || 0} m</strong>
-          <span>approx. distance</span>
+          <strong>{routeData.turns}</strong>
+          <span>direction changes</span>
         </div>
         <div>
-          <strong>{routeData.estimatedMinutes || 1} min</strong>
-          <span>walking time</span>
+          <strong>{routeData.gridSteps}</strong>
+          <span>navigation cells</span>
         </div>
       </div>
     </aside>
