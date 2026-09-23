@@ -1,8 +1,8 @@
 const items = [
-  ["Office", "legend-office"],
-  ["Meeting", "legend-meeting"],
-  ["Facility", "legend-facility"],
-  ["Emergency", "legend-emergency"],
+  ["Start", "legend-start"],
+  ["Destination", "legend-destination"],
+  ["Route", "legend-route"],
+  ["Emergency / POI", "legend-emergency"],
 ];
 
 function FloorLegend() {
