@@ -568,3 +568,76 @@ button {
     padding: 10px 12px;
   }
 }
+
+
+.direction-controls {
+  position: absolute;
+  z-index: 4;
+  top: 96px;
+  right: 10px;
+  width: 96px;
+  padding: 8px;
+  display: grid;
+  gap: 7px;
+  border: 1px solid rgba(203, 213, 225, 0.95);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16);
+  backdrop-filter: blur(10px);
+}
+
+.direction-controls button {
+  min-height: 36px;
+  border: 1px solid #dbe3ee;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #0f172a;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.direction-controls button:hover {
+  background: #f8fafc;
+  border-color: #93c5fd;
+}
+
+.north-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.north-arrow {
+  color: #2563eb;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.direction-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.direction-row button {
+  font-size: 20px;
+}
+
+.pitch-button {
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 560px) {
+  .direction-controls {
+    top: 92px;
+    right: 8px;
+    width: 88px;
+    padding: 7px;
+  }
+
+  .direction-controls button {
+    min-height: 34px;
+  }
+}
