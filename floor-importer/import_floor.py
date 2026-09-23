@@ -106,13 +106,13 @@ def build_grid(mask, cell_size):
 
 
 def read_ocr_lines(crop):
-    scale = 1.5
+    scale = 2.2
     up = cv2.resize(crop, None, fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
     gray = cv2.cvtColor(up, cv2.COLOR_BGR2GRAY)
     data = pytesseract.image_to_data(
         gray, output_type=Output.DATAFRAME, config="--psm 11"
     )
-    data = data[(data.conf > 50) & data.text.notna()].copy()
+    data = data[(data.conf > 35) & data.text.notna()].copy()
     if data.empty:
         return []
 
@@ -140,6 +140,7 @@ def read_ocr_lines(crop):
                 "bottom": bottom,
                 "cx": (left + right) / 2,
                 "cy": (top + bottom) / 2,
+                "confidence": round(float(group.conf.mean()), 1),
             }
         )
 
@@ -176,47 +177,63 @@ def classify(name):
 
 
 def clean_text(value):
-    value = re.sub(r"[^A-Za-z0-9 /&()\-.,]+", " ", value)
-    return re.sub(r"\s+", " ", value).strip()
+    value = re.sub(r"[^A-Za-z0-9 /&()\-.,éÉ]+", " ", value)
+    value = re.sub(r"\s+", " ", value).strip()
+    corrections = {
+        "Ppex Logistics": "Apex Logistics",
+        "Small Copy Statiins": "Small Copy Stations",
+        "Small Conferece": "Small Conference",
+        "Quhet Room": "Quiet Room",
+        "Storge": "Storage",
+    }
+    return corrections.get(value, value)
 
 
 def extract_locations(crop):
     lines = read_ocr_lines(crop)
     height, width = crop.shape[:2]
     locations = []
-    room_pattern = re.compile(r"\bR(?:oo|o)n?m\s*(\d{1,3})\b", re.I)
+    room_pattern = re.compile(
+        r"\bR(?:oo|o)[nm]\s*([0-9OIl¢$]{1,3})\b", re.I
+    )
 
     for line in lines:
         match = room_pattern.search(line["text"])
         if not match:
             continue
 
-        room_number = match.group(1)
+        room_number = (
+            match.group(1)
+            .upper()
+            .replace("O", "0")
+            .replace("I", "1")
+            .replace("L", "1")
+            .replace("¢", "0")
+            .replace("$", "5")
+        )
+        room_number = re.sub(r"\D", "", room_number)
         candidates = []
 
         for previous in lines:
-            if previous["bottom"] > line["top"] + 4:
+            if previous is line:
                 continue
 
             dy = line["top"] - previous["bottom"]
             dx = abs(previous["cx"] - line["cx"])
             text = previous["text"].strip(" |_-")
 
-            if not (0 <= dy <= 55 and dx <= 105):
+            if not (-5 <= dy <= 65 and dx <= 105):
                 continue
-            if not text or re.fullmatch(r"\d+", text):
+            if not text or re.fullmatch(r"[\d\W_]+", text):
                 continue
-            if re.search(r"\bRoom\b", text, re.I):
+            if room_pattern.fullmatch(text):
                 continue
 
-            candidates.append((dy + dx * 0.25, previous))
+            candidates.append(previous)
 
-        name = (
-            min(candidates, key=lambda item: item[0])[1]["text"]
-            if candidates
-            else f"Room {room_number}"
-        )
-        name = clean_text(name) or f"Room {room_number}"
+        candidates = sorted(candidates, key=lambda item: item["top"])[-3:]
+        name = " ".join(clean_text(item["text"]) for item in candidates).strip()
+        name = name or f"Room {room_number}"
 
         location = {
             "id": f"R{len(locations) + 1:03d}",
@@ -260,6 +277,39 @@ def extract_locations(crop):
                 line["cy"] - old["pixel"][1],
             )
             < 45
+            for old in locations
+        ):
+            continue
+
+        locations.append(
+            {
+                "id": f"P{len(locations) + 1:03d}",
+                "name": text,
+                "room": None,
+                "type": classify(text),
+                "pixel": [round(line["cx"], 1), round(line["cy"], 1)],
+                "aliases": [text],
+            }
+        )
+
+    # Add high-confidence OCR labels that were not paired with a Room-number line.
+    # This makes company names and facilities searchable even when the tiny
+    # "Room NN" caption was missed by OCR.
+    for line in lines:
+        text = clean_text(line["text"])
+        if line.get("confidence", 0) < 78:
+            continue
+        if len(re.sub(r"[^A-Za-z]", "", text)) < 4:
+            continue
+        if room_pattern.search(text):
+            continue
+        if line["cx"] > width * 0.84 and line["cy"] > height * 0.78:
+            continue
+        if any(
+            math.hypot(
+                line["cx"] - old["pixel"][0],
+                line["cy"] - old["pixel"][1],
+            ) < 42
             for old in locations
         ):
             continue
@@ -427,13 +477,13 @@ def main():
     cv2.imwrite(
         str(image_output),
         crop,
-        [cv2.IMWRITE_WEBP_QUALITY, 84],
+        [cv2.IMWRITE_WEBP_QUALITY, 96],
     )
 
     bitset = np.packbits(np.array(grid, dtype=np.uint8).reshape(-1)).tobytes()
 
     payload = {
-        "version": 1,
+        "version": 2,
         "floor": args.floor,
         "name": args.name or f"Floor {args.floor}",
         "image": f"/floors/{image_output.name}",
@@ -456,7 +506,7 @@ def main():
             "source": image_path.name,
             "crop": [int(x0), int(y0), int(x1), int(y1)],
             "detectedLocations": len(locations),
-            "mode": "OCR + corridor segmentation + grid routing",
+            "mode": "enhanced OCR + corridor segmentation + grid routing",
             "warning": (
                 "Generated navigation data is a draft. Verify entrances, lifts, "
                 "stairs and emergency exits before production use."
