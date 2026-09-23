@@ -1,23 +1,18 @@
 [
-  {
-    "id": "D101",
-    "name": "Office D101",
-    "category": "office",
-    "floor": 1,
-    "nodeId": "N1"
-  },
-  {
-    "id": "D102",
-    "name": "Office D102",
-    "category": "office",
-    "floor": 1,
-    "nodeId": "N2"
-  },
-  {
-    "id": "D103",
-    "name": "Meeting Room D103",
-    "category": "meeting",
-    "floor": 1,
-    "nodeId": "N3"
-  }
+  {"id":"D101","name":"Reception","category":"reception","floor":1,"nodeId":"N1","entrance":[0.00008,0.00048]},
+  {"id":"D102","name":"Finance","category":"office","floor":1,"nodeId":"N2","entrance":[0.00030,0.00048]},
+  {"id":"D103","name":"HR","category":"office","floor":1,"nodeId":"N3","entrance":[0.00052,0.00048]},
+  {"id":"D104","name":"Engineering","category":"office","floor":1,"nodeId":"N5","entrance":[0.00090,0.00048]},
+  {"id":"D105","name":"Operations","category":"office","floor":1,"nodeId":"N6","entrance":[0.00112,0.00048]},
+  {"id":"D106","name":"Support","category":"office","floor":1,"nodeId":"N7","entrance":[0.00134,0.00048]},
+  {"id":"D107","name":"Sales","category":"office","floor":1,"nodeId":"N1","entrance":[0.00008,0.00064]},
+  {"id":"D108","name":"Marketing","category":"office","floor":1,"nodeId":"N2","entrance":[0.00030,0.00064]},
+  {"id":"D109","name":"Design Studio","category":"office","floor":1,"nodeId":"N3","entrance":[0.00052,0.00064]},
+  {"id":"D110","name":"Meeting Room A","category":"meeting","floor":1,"nodeId":"N5","entrance":[0.00090,0.00064]},
+  {"id":"D111","name":"Meeting Room B","category":"meeting","floor":1,"nodeId":"N6","entrance":[0.00112,0.00064]},
+  {"id":"D112","name":"Director Office","category":"office","floor":1,"nodeId":"N7","entrance":[0.00134,0.00064]},
+  {"id":"D113","name":"Conference Room","category":"meeting","floor":1,"nodeId":"N9","entrance":[0.00065,0.00122]},
+  {"id":"D114","name":"Training Room","category":"meeting","floor":1,"nodeId":"N9","entrance":[0.00081,0.00122]},
+  {"id":"D115","name":"Pantry","category":"facility","floor":1,"nodeId":"N10","entrance":[0.00065,0.00154]},
+  {"id":"D116","name":"Washroom","category":"facility","floor":1,"nodeId":"N10","entrance":[0.00081,0.00154]}
 ]
