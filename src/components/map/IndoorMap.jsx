@@ -1,8 +1,5 @@
 import { useEffect, useRef } from "react";
 import * as maplibregl from "maplibre-gl";
-import floorDataRaw from "../../data/floor1.geojson?raw";
-
-const INITIAL_CENTER = [0.00073, 0.00086];
 
 function createMarkerElement(kind) {
   const element = document.createElement("div");
@@ -11,16 +8,33 @@ function createMarkerElement(kind) {
   return element;
 }
 
-function IndoorMap({ routeData }) {
+function createPoiFeature(location) {
+  return {
+    type: "Feature",
+    properties: {
+      id: location.id,
+      name: location.name,
+      type: location.type,
+      room: location.room || "",
+    },
+    geometry: {
+      type: "Point",
+      coordinates: location.labelCoordinate,
+    },
+  };
+}
+
+function IndoorMap({ floorData, routeData }) {
   const mapContainer = useRef(null);
   const mapRef = useRef(null);
   const startMarkerRef = useRef(null);
   const destinationMarkerRef = useRef(null);
 
   useEffect(() => {
-    if (!mapContainer.current || mapRef.current) return;
+    if (!floorData || !mapContainer.current) return undefined;
 
-    const floorData = JSON.parse(floorDataRaw);
+    const { west, east, south, north } = floorData.mapBounds;
+    const center = [(west + east) / 2, (south + north) / 2];
 
     const map = new maplibregl.Map({
       container: mapContainer.current,
@@ -31,25 +45,21 @@ function IndoorMap({ routeData }) {
           {
             id: "background",
             type: "background",
-            paint: {
-              "background-color": "#eef2f7",
-            },
+            paint: { "background-color": "#e8edf3" },
           },
         ],
       },
-      center: INITIAL_CENTER,
-      zoom: 18.15,
-      pitch: 48,
-      bearing: -24,
+      center,
+      zoom: 15,
+      pitch: 0,
+      bearing: 0,
+      minZoom: 12,
+      maxZoom: 22,
       maxPitch: 65,
-      minZoom: 16.5,
-      maxZoom: 21,
       attributionControl: false,
-      cooperativeGestures: false,
     });
 
     mapRef.current = map;
-
     map.dragPan.enable();
     map.scrollZoom.enable();
     map.dragRotate.enable();
@@ -66,130 +76,115 @@ function IndoorMap({ routeData }) {
     );
 
     map.on("load", () => {
-      map.addSource("floor-data", {
+      map.addSource("floor-image", {
+        type: "image",
+        url: floorData.image,
+        coordinates: [
+          [west, north],
+          [east, north],
+          [east, south],
+          [west, south],
+        ],
+      });
+
+      map.addLayer({
+        id: "floor-image-layer",
+        type: "raster",
+        source: "floor-image",
+        paint: {
+          "raster-opacity": 1,
+          "raster-fade-duration": 0,
+        },
+      });
+
+      const importantPoiTypes = new Set(["lift", "stairs", "emergency"]);
+      const poiFeatures = floorData.locations
+        .filter(
+          (location) =>
+            importantPoiTypes.has(location.type) && location.labelCoordinate,
+        )
+        .map(createPoiFeature);
+
+      map.addSource("floor-pois", {
         type: "geojson",
-        data: floorData,
-      });
-
-      map.addLayer({
-        id: "corridor-layer",
-        type: "fill",
-        source: "floor-data",
-        filter: ["==", ["get", "category"], "corridor"],
-        paint: {
-          "fill-color": "#ffffff",
-          "fill-opacity": 1,
+        data: {
+          type: "FeatureCollection",
+          features: poiFeatures,
         },
       });
 
       map.addLayer({
-        id: "room-layer",
-        type: "fill-extrusion",
-        source: "floor-data",
-        filter: ["!=", ["get", "category"], "corridor"],
+        id: "floor-poi-points",
+        type: "circle",
+        source: "floor-pois",
         paint: {
-          "fill-extrusion-color": [
+          "circle-radius": 6,
+          "circle-color": [
             "match",
-            ["get", "category"],
-            "meeting",
-            "#c7d2fe",
-            "facility",
-            "#fde68a",
+            ["get", "type"],
+            "lift",
+            "#2563eb",
+            "stairs",
+            "#7c3aed",
             "emergency",
-            "#fecaca",
-            "reception",
-            "#bbf7d0",
-            "#e2e8f0"
+            "#16a34a",
+            "#475569",
           ],
-          "fill-extrusion-height": [
-            "match",
-            ["get", "category"],
-            "emergency",
-            6,
-            9
-          ],
-          "fill-extrusion-base": 0,
-          "fill-extrusion-opacity": 0.97,
+          "circle-stroke-color": "#ffffff",
+          "circle-stroke-width": 2,
         },
       });
 
-      map.addLayer({
-        id: "room-outline",
-        type: "line",
-        source: "floor-data",
-        filter: ["!=", ["get", "category"], "corridor"],
-        paint: {
-          "line-color": "#64748b",
-          "line-width": 1.3,
-        },
-      });
-
-      map.addLayer({
-        id: "room-labels",
-        type: "symbol",
-        source: "floor-data",
-        filter: ["!=", ["get", "category"], "corridor"],
-        layout: {
-          "text-field": [
-            "format",
-            ["get", "id"],
-            { "font-scale": 1.05 },
-            "\n",
-            {},
-            ["get", "name"],
-            { "font-scale": 0.72 }
-          ],
-          "text-size": 13,
-          "text-anchor": "center",
-          "text-allow-overlap": false,
-          "text-padding": 2,
-        },
-        paint: {
-          "text-color": "#0f172a",
-          "text-halo-color": "#ffffff",
-          "text-halo-width": 1.4,
-        },
-      });
-
-      map.on("click", "room-layer", (event) => {
+      map.on("click", "floor-poi-points", (event) => {
         const feature = event.features?.[0];
         if (!feature) return;
 
-        const { id, name, category } = feature.properties;
-
-        new maplibregl.Popup({ closeButton: true, offset: 12 })
+        const { name, type } = feature.properties;
+        new maplibregl.Popup({ offset: 10 })
           .setLngLat(event.lngLat)
-          .setHTML(
-            `<div class="room-popup"><strong>${id}</strong><span>${name}</span><small>${category}</small></div>`,
-          )
+          .setHTML(`<strong>${name}</strong><br/><small>${type}</small>`)
           .addTo(map);
       });
 
-      map.on("mouseenter", "room-layer", () => {
+      map.on("mouseenter", "floor-poi-points", () => {
         map.getCanvas().style.cursor = "pointer";
       });
 
-      map.on("mouseleave", "room-layer", () => {
+      map.on("mouseleave", "floor-poi-points", () => {
         map.getCanvas().style.cursor = "";
       });
+
+      map.fitBounds(
+        [
+          [west, south],
+          [east, north],
+        ],
+        {
+          padding: 24,
+          duration: 0,
+          pitch: 0,
+          bearing: 0,
+        },
+      );
     });
 
     return () => {
       startMarkerRef.current?.remove();
       destinationMarkerRef.current?.remove();
+      startMarkerRef.current = null;
+      destinationMarkerRef.current = null;
       map.remove();
       mapRef.current = null;
     };
-  }, []);
+  }, [floorData]);
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || !floorData) return undefined;
 
     const clearRoute = () => {
       if (map.getLayer("route-line")) map.removeLayer("route-line");
       if (map.getSource("route")) map.removeSource("route");
-
       startMarkerRef.current?.remove();
       destinationMarkerRef.current?.remove();
       startMarkerRef.current = null;
@@ -199,24 +194,22 @@ function IndoorMap({ routeData }) {
     if (!routeData?.coordinates?.length) {
       if (map.loaded()) clearRoute();
       else map.once("load", clearRoute);
-      return;
+      return undefined;
     }
 
     const drawRoute = () => {
       clearRoute();
 
-      const routeGeoJSON = {
-        type: "Feature",
-        properties: {},
-        geometry: {
-          type: "LineString",
-          coordinates: routeData.coordinates,
-        },
-      };
-
       map.addSource("route", {
         type: "geojson",
-        data: routeGeoJSON,
+        data: {
+          type: "Feature",
+          properties: {},
+          geometry: {
+            type: "LineString",
+            coordinates: routeData.coordinates,
+          },
+        },
       });
 
       map.addLayer({
@@ -235,7 +228,7 @@ function IndoorMap({ routeData }) {
       });
 
       const startCoordinate = routeData.coordinates[0];
-      const endCoordinate = routeData.coordinates.at(-1);
+      const destinationCoordinate = routeData.coordinates.at(-1);
 
       startMarkerRef.current = new maplibregl.Marker({
         element: createMarkerElement("start"),
@@ -248,7 +241,7 @@ function IndoorMap({ routeData }) {
         element: createMarkerElement("destination"),
         anchor: "bottom",
       })
-        .setLngLat(endCoordinate)
+        .setLngLat(destinationCoordinate)
         .addTo(map);
 
       const bounds = new maplibregl.LngLatBounds();
@@ -257,53 +250,56 @@ function IndoorMap({ routeData }) {
       if (routeData.coordinates.length === 1) {
         map.easeTo({
           center: startCoordinate,
-          zoom: 20,
-          pitch: 50,
-          duration: 900,
+          zoom: Math.min(20, map.getMaxZoom()),
+          duration: 700,
         });
       } else {
         map.fitBounds(bounds, {
-          padding: { top: 80, right: 70, bottom: 110, left: 70 },
-          duration: 1200,
-          maxZoom: 19.4,
-          pitch: 50,
+          padding: { top: 90, right: 90, bottom: 100, left: 90 },
+          duration: 900,
+          maxZoom: 20,
           bearing: map.getBearing(),
+          pitch: map.getPitch(),
         });
       }
     };
 
     if (map.loaded()) drawRoute();
     else map.once("load", drawRoute);
-  }, [routeData]);
+
+    return undefined;
+  }, [floorData, routeData]);
 
   const rotateMap = (degrees) => {
     const map = mapRef.current;
     if (!map) return;
-
-    map.easeTo({
-      bearing: map.getBearing() + degrees,
-      duration: 350,
-    });
+    map.easeTo({ bearing: map.getBearing() + degrees, duration: 350 });
   };
 
   const resetNorth = () => {
     const map = mapRef.current;
     if (!map) return;
-
-    map.easeTo({
-      bearing: 0,
-      duration: 500,
-    });
+    map.easeTo({ bearing: 0, duration: 450 });
   };
 
   const togglePitch = () => {
     const map = mapRef.current;
     if (!map) return;
+    map.easeTo({ pitch: map.getPitch() > 20 ? 0 : 48, duration: 450 });
+  };
 
-    map.easeTo({
-      pitch: map.getPitch() > 20 ? 0 : 50,
-      duration: 450,
-    });
+  const fitFloor = () => {
+    const map = mapRef.current;
+    if (!map || !floorData) return;
+
+    const { west, east, south, north } = floorData.mapBounds;
+    map.fitBounds(
+      [
+        [west, south],
+        [east, north],
+      ],
+      { padding: 24, duration: 650, pitch: map.getPitch() },
+    );
   };
 
   return (
@@ -326,36 +322,31 @@ function IndoorMap({ routeData }) {
           <button
             type="button"
             onClick={() => rotateMap(-45)}
-            title="Rotate left"
-            aria-label="Rotate map left"
+            aria-label="Rotate left"
           >
             ↶
           </button>
-
           <button
             type="button"
             onClick={() => rotateMap(45)}
-            title="Rotate right"
-            aria-label="Rotate map right"
+            aria-label="Rotate right"
           >
             ↷
           </button>
         </div>
 
-        <button
-          type="button"
-          className="pitch-button"
-          onClick={togglePitch}
-          title="Switch between flat and tilted view"
-          aria-label="Toggle 2D and 3D view"
-        >
+        <button type="button" className="pitch-button" onClick={togglePitch}>
           2D / 3D
+        </button>
+
+        <button type="button" className="pitch-button" onClick={fitFloor}>
+          Fit floor
         </button>
       </div>
 
       <div className="map-tip">
-        <strong>Move the map</strong>
-        <span>Drag to pan · wheel/pinch to zoom · use Direction controls to rotate</span>
+        <strong>Real imported floor plan</strong>
+        <span>Search a room or POI, then follow the blue corridor route.</span>
       </div>
     </div>
   );
