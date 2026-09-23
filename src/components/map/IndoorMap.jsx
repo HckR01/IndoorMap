@@ -46,6 +46,11 @@ function IndoorMap({ routeData }) {
     map.on("load", async () => {
       try {
         const response = await fetch("/src/data/floor1.geojson");
+
+        if (!response.ok) {
+          throw new Error("Unable to load floor1.geojson");
+        }
+
         const floorData = await response.json();
 
         map.addSource("floor-data", {
@@ -53,7 +58,6 @@ function IndoorMap({ routeData }) {
           data: floorData,
         });
 
-        // Corridor layer
         map.addLayer({
           id: "corridor-layer",
           type: "fill",
@@ -65,7 +69,6 @@ function IndoorMap({ routeData }) {
           },
         });
 
-        // 2.5D room layer
         map.addLayer({
           id: "room-layer",
           type: "fill-extrusion",
@@ -81,14 +84,12 @@ function IndoorMap({ routeData }) {
               "#e5e7eb",
               "#dbeafe",
             ],
-
             "fill-extrusion-height": 8,
             "fill-extrusion-base": 0,
             "fill-extrusion-opacity": 0.95,
           },
         });
 
-        // Room outlines
         map.addLayer({
           id: "room-outline",
           type: "line",
@@ -100,19 +101,16 @@ function IndoorMap({ routeData }) {
           },
         });
 
-        // Room labels
         map.addLayer({
           id: "room-labels",
           type: "symbol",
           source: "floor-data",
           filter: ["!=", ["get", "category"], "corridor"],
-
           layout: {
             "text-field": ["get", "id"],
             "text-size": 14,
             "text-anchor": "center",
           },
-
           paint: {
             "text-color": "#111827",
             "text-halo-color": "#ffffff",
@@ -120,27 +118,18 @@ function IndoorMap({ routeData }) {
           },
         });
 
-        // Click room
         map.on("click", "room-layer", (event) => {
           const feature = event.features?.[0];
-
           if (!feature) return;
 
           const { id, name } = feature.properties;
 
           new maplibregl.Popup()
             .setLngLat(event.lngLat)
-            .setHTML(
-              `
-              <strong>${id}</strong>
-              <br/>
-              ${name}
-            `,
-            )
+            .setHTML(`<strong>${id}</strong><br/>${name}`)
             .addTo(map);
         });
 
-        // Pointer cursor
         map.on("mouseenter", "room-layer", () => {
           map.getCanvas().style.cursor = "pointer";
         });
@@ -158,59 +147,66 @@ function IndoorMap({ routeData }) {
       mapRef.current = null;
     };
   }, []);
+
   useEffect(() => {
     const map = mapRef.current;
 
-    if (!map || !routeData?.coordinates?.length) {
-      return;
-    }
+    if (!map || !routeData?.coordinates?.length) return;
 
-    const routeGeoJSON = {
-      type: "Feature",
-      properties: {},
-      geometry: {
-        type: "LineString",
-        coordinates: routeData.coordinates,
-      },
+    const drawRoute = () => {
+      const routeGeoJSON = {
+        type: "Feature",
+        properties: {},
+        geometry: {
+          type: "LineString",
+          coordinates: routeData.coordinates,
+        },
+      };
+
+      const existingSource = map.getSource("route");
+
+      if (existingSource) {
+        existingSource.setData(routeGeoJSON);
+      } else {
+        map.addSource("route", {
+          type: "geojson",
+          data: routeGeoJSON,
+        });
+
+        map.addLayer({
+          id: "route-line",
+          type: "line",
+          source: "route",
+          layout: {
+            "line-join": "round",
+            "line-cap": "round",
+          },
+          paint: {
+            "line-color": "#2563eb",
+            "line-width": 7,
+            "line-opacity": 0.95,
+          },
+        });
+      }
+
+      const bounds = new maplibregl.LngLatBounds();
+
+      routeData.coordinates.forEach((coordinate) => {
+        bounds.extend(coordinate);
+      });
+
+      map.fitBounds(bounds, {
+        padding: 80,
+        duration: 1200,
+        maxZoom: 19,
+      });
     };
 
-    if (map.getSource("route")) {
-      map.getSource("route").setData(routeGeoJSON);
+    if (map.loaded()) {
+      drawRoute();
     } else {
-      map.addSource("route", {
-        type: "geojson",
-        data: routeGeoJSON,
-      });
-
-      map.addLayer({
-        id: "route-line",
-        type: "line",
-        source: "route",
-
-        layout: {
-          "line-join": "round",
-          "line-cap": "round",
-        },
-
-        paint: {
-          "line-color": "#2563eb",
-          "line-width": 7,
-          "line-opacity": 0.95,
-        },
-      });
+      map.once("load", drawRoute);
     }
-
-    const bounds = new maplibregl.LngLatBounds();
-
-    routeData.coordinates.forEach((coordinate) => {
-      bounds.extend(coordinate);
-    });
-
-    map.fitBounds(bounds, {
-      padding: 80,
-      duration: 1200,
-      maxZoom: 19,
-    });
   }, [routeData]);
 
   return (
