@@ -58,7 +58,7 @@ function IndoorMap({ routeData }) {
 
     map.addControl(
       new maplibregl.NavigationControl({
-        showCompass: true,
+        showCompass: false,
         showZoom: true,
         visualizePitch: true,
       }),
@@ -276,13 +276,86 @@ function IndoorMap({ routeData }) {
     else map.once("load", drawRoute);
   }, [routeData]);
 
+  const rotateMap = (degrees) => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    map.easeTo({
+      bearing: map.getBearing() + degrees,
+      duration: 350,
+    });
+  };
+
+  const resetNorth = () => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    map.easeTo({
+      bearing: 0,
+      duration: 500,
+    });
+  };
+
+  const togglePitch = () => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    map.easeTo({
+      pitch: map.getPitch() > 20 ? 0 : 50,
+      duration: 450,
+    });
+  };
+
   return (
     <div className="map-shell">
       <div ref={mapContainer} className="map-canvas" />
 
+      <div className="direction-controls" aria-label="Map direction controls">
+        <button
+          type="button"
+          className="north-button"
+          onClick={resetNorth}
+          title="Face north"
+          aria-label="Face north"
+        >
+          <span className="north-arrow">↑</span>
+          <span>N</span>
+        </button>
+
+        <div className="direction-row">
+          <button
+            type="button"
+            onClick={() => rotateMap(-45)}
+            title="Rotate left"
+            aria-label="Rotate map left"
+          >
+            ↶
+          </button>
+
+          <button
+            type="button"
+            onClick={() => rotateMap(45)}
+            title="Rotate right"
+            aria-label="Rotate map right"
+          >
+            ↷
+          </button>
+        </div>
+
+        <button
+          type="button"
+          className="pitch-button"
+          onClick={togglePitch}
+          title="Switch between flat and tilted view"
+          aria-label="Toggle 2D and 3D view"
+        >
+          2D / 3D
+        </button>
+      </div>
+
       <div className="map-tip">
         <strong>Move the map</strong>
-        <span>Drag to pan · wheel/pinch to zoom · rotate with compass or gesture</span>
+        <span>Drag to pan · wheel/pinch to zoom · use Direction controls to rotate</span>
       </div>
     </div>
   );
