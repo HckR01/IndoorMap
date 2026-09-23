@@ -13,12 +13,32 @@ function key([col, row]) {
   return `${col},${row}`;
 }
 
-function isWalkable(grid, col, row) {
+function decodeWalkable(grid) {
+  if (grid._decodedWalkable) return grid._decodedWalkable;
+
+  if (grid.encoding === "bitset-base64" && grid.walkableB64) {
+    const binary = atob(grid.walkableB64);
+    const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+    grid._decodedWalkable = bytes;
+    return bytes;
+  }
+
+  return null;
+}
+
+function isWalkable(grid, col, row, decoded) {
   if (row < 0 || col < 0 || row >= grid.rows || col >= grid.cols) {
     return false;
   }
 
-  return grid.walkable[row]?.[col] === "1";
+  if (decoded) {
+    const index = row * grid.cols + col;
+    const byte = decoded[Math.floor(index / 8)];
+    const bit = 7 - (index % 8);
+    return ((byte >> bit) & 1) === 1;
+  }
+
+  return grid.walkable?.[row]?.[col] === "1";
 }
 
 function heuristic([col, row], [targetCol, targetRow]) {
@@ -29,8 +49,11 @@ function heuristic([col, row], [targetCol, targetRow]) {
 
 export function findGridPath(grid, start, destination) {
   if (!grid || !start || !destination) return [];
-  if (!isWalkable(grid, start[0], start[1])) return [];
-  if (!isWalkable(grid, destination[0], destination[1])) return [];
+
+  const decoded = decodeWalkable(grid);
+
+  if (!isWalkable(grid, start[0], start[1], decoded)) return [];
+  if (!isWalkable(grid, destination[0], destination[1], decoded)) return [];
 
   const startKey = key(start);
   const destinationKey = key(destination);
@@ -65,12 +88,13 @@ export function findGridPath(grid, start, destination) {
       const nextCol = col + dc;
       const nextRow = row + dr;
 
-      if (!isWalkable(grid, nextCol, nextRow)) continue;
+      if (!isWalkable(grid, nextCol, nextRow, decoded)) continue;
 
       if (
         dc !== 0 &&
         dr !== 0 &&
-        (!isWalkable(grid, col + dc, row) || !isWalkable(grid, col, row + dr))
+        (!isWalkable(grid, col + dc, row, decoded) ||
+          !isWalkable(grid, col, row + dr, decoded))
       ) {
         continue;
       }
