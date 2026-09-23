@@ -1,27 +1,56 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import rooms from "../../data/rooms.json";
 import { useRouteFinder } from "../../hooks/useRouteFinder";
 
-function SearchPanel({ onRouteFound }) {
-  const [start, setStart] = useState("");
-  const [destination, setDestination] = useState("");
-  const [message, setMessage] = useState("");
+function RoomInput({ label, value, onChange, placeholder }) {
+  const suggestions = useMemo(() => {
+    const query = value.trim().toLowerCase();
+    if (!query) return [];
 
+    return rooms
+      .filter((room) =>
+        `${room.id} ${room.name}`.toLowerCase().includes(query),
+      )
+      .slice(0, 6);
+  }, [value]);
+
+  return (
+    <div className="route-field">
+      <label>{label}</label>
+      <input
+        type="text"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={placeholder}
+        autoComplete="off"
+      />
+
+      {suggestions.length > 0 && value.trim() !== "" && (
+        <div className="suggestions" role="listbox">
+          {suggestions.map((room) => (
+            <button
+              key={room.id}
+              type="button"
+              onClick={() => onChange(room.id)}
+            >
+              <span>{room.id}</span>
+              <small>{room.name}</small>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SearchPanel({ onRouteFound, onClearRoute }) {
+  const [start, setStart] = useState("D101");
+  const [destination, setDestination] = useState("D116");
+  const [message, setMessage] = useState("");
   const { getRoute } = useRouteFinder();
 
-  const filteredStartRooms = rooms.filter((room) =>
-    `${room.id} ${room.name}`.toLowerCase().includes(start.toLowerCase()),
-  );
-
-  const filteredDestinationRooms = rooms.filter((room) =>
-    `${room.id} ${room.name}`.toLowerCase().includes(destination.toLowerCase()),
-  );
-
-  const handleShowRoute = () => {
-    if (!start || !destination) {
-      setMessage("Please enter both start and destination.");
-      return;
-    }
+  const handleSubmit = (event) => {
+    event.preventDefault();
 
     const result = getRoute(start, destination);
 
@@ -30,180 +59,79 @@ function SearchPanel({ onRouteFound }) {
       return;
     }
 
-    setMessage(`Route found: ${result.path.join(" → ")}`);
+    setMessage(
+      result.distance > 0
+        ? `${result.startRoom.id} → ${result.destinationRoom.id} · about ${result.distance} m`
+        : result.message,
+    );
 
-    if (onRouteFound) {
-      onRouteFound(result);
-    }
+    onRouteFound(result);
+  };
+
+  const handleSwap = () => {
+    setStart(destination);
+    setDestination(start);
+    setMessage("");
+  };
+
+  const handleClear = () => {
+    setStart("");
+    setDestination("");
+    setMessage("");
+    onClearRoute();
   };
 
   return (
-    <div
-      style={{
-        background: "#ffffff",
-        padding: "16px",
-        borderRadius: "14px",
-        boxShadow: "0 4px 14px rgba(0,0,0,0.08)",
-        marginBottom: "16px",
-      }}
-    >
-      <h2
-        style={{
-          fontSize: "18px",
-          marginBottom: "12px",
-        }}
-      >
-        Find a route
-      </h2>
-
-      <div
-        style={{
-          display: "grid",
-          gap: "12px",
-        }}
-      >
+    <form className="search-panel" onSubmit={handleSubmit}>
+      <div className="search-panel-title">
         <div>
-          <label
-            style={{
-              display: "block",
-              fontSize: "13px",
-              marginBottom: "6px",
-              color: "#6b7280",
-            }}
-          >
-            Start
-          </label>
+          <span className="eyebrow">Floor 1</span>
+          <h2>Indoor directions</h2>
+        </div>
+        <button className="clear-button" type="button" onClick={handleClear}>
+          Clear
+        </button>
+      </div>
 
-          <input
-            type="text"
-            value={start}
-            onChange={(e) => setStart(e.target.value)}
-            placeholder="Example: D101"
-            style={{
-              width: "100%",
-              padding: "12px 14px",
-              borderRadius: "10px",
-              border: "1px solid #d1d5db",
-              outline: "none",
-            }}
-          />
-
-          {start && (
-            <div
-              style={{
-                marginTop: "6px",
-                border: "1px solid #e5e7eb",
-                borderRadius: "10px",
-                overflow: "hidden",
-              }}
-            >
-              {filteredStartRooms.map((room) => (
-                <button
-                  key={room.id}
-                  type="button"
-                  onClick={() => setStart(room.id)}
-                  style={{
-                    width: "100%",
-                    textAlign: "left",
-                    padding: "10px 12px",
-                    border: "none",
-                    borderBottom: "1px solid #f1f5f9",
-                    background: "#ffffff",
-                    cursor: "pointer",
-                  }}
-                >
-                  <strong>{room.id}</strong> — {room.name}
-                </button>
-              ))}
-            </div>
-          )}
+      <div className="route-inputs">
+        <div className="route-dots" aria-hidden="true">
+          <span className="start-dot" />
+          <span className="route-stem" />
+          <span className="destination-dot" />
         </div>
 
-        <div>
-          <label
-            style={{
-              display: "block",
-              fontSize: "13px",
-              marginBottom: "6px",
-              color: "#6b7280",
-            }}
-          >
-            Destination
-          </label>
-
-          <input
-            type="text"
-            value={destination}
-            onChange={(e) => setDestination(e.target.value)}
-            placeholder="Example: D103"
-            style={{
-              width: "100%",
-              padding: "12px 14px",
-              borderRadius: "10px",
-              border: "1px solid #d1d5db",
-              outline: "none",
-            }}
+        <div className="route-fields">
+          <RoomInput
+            label="Start"
+            value={start}
+            onChange={setStart}
+            placeholder="Room number or name"
           />
-
-          {destination && (
-            <div
-              style={{
-                marginTop: "6px",
-                border: "1px solid #e5e7eb",
-                borderRadius: "10px",
-                overflow: "hidden",
-              }}
-            >
-              {filteredDestinationRooms.map((room) => (
-                <button
-                  key={room.id}
-                  type="button"
-                  onClick={() => setDestination(room.id)}
-                  style={{
-                    width: "100%",
-                    textAlign: "left",
-                    padding: "10px 12px",
-                    border: "none",
-                    borderBottom: "1px solid #f1f5f9",
-                    background: "#ffffff",
-                    cursor: "pointer",
-                  }}
-                >
-                  <strong>{room.id}</strong> — {room.name}
-                </button>
-              ))}
-            </div>
-          )}
+          <RoomInput
+            label="Destination"
+            value={destination}
+            onChange={setDestination}
+            placeholder="Room number or name"
+          />
         </div>
 
         <button
+          className="swap-button"
           type="button"
-          onClick={handleShowRoute}
-          style={{
-            padding: "12px 16px",
-            border: "none",
-            borderRadius: "10px",
-            background: "#2563eb",
-            color: "#ffffff",
-            fontWeight: "600",
-            cursor: "pointer",
-          }}
+          onClick={handleSwap}
+          aria-label="Swap start and destination"
+          title="Swap start and destination"
         >
-          Show Route
+          ⇅
         </button>
-
-        {message && (
-          <p
-            style={{
-              fontSize: "14px",
-              color: "#475569",
-            }}
-          >
-            {message}
-          </p>
-        )}
       </div>
-    </div>
+
+      <button className="route-button" type="submit">
+        Show route
+      </button>
+
+      {message && <p className="route-message">{message}</p>}
+    </form>
   );
 }
 
