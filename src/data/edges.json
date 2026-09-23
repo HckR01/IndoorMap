@@ -1,12 +1,12 @@
 [
-  {
-    "from": "N1",
-    "to": "N2",
-    "weight": 1
-  },
-  {
-    "from": "N2",
-    "to": "N3",
-    "weight": 1
-  }
+  {"from":"N1","to":"N2","weight":12},
+  {"from":"N2","to":"N3","weight":12},
+  {"from":"N3","to":"N4","weight":12},
+  {"from":"N4","to":"N5","weight":10},
+  {"from":"N5","to":"N6","weight":12},
+  {"from":"N6","to":"N7","weight":12},
+  {"from":"N4","to":"N8","weight":18},
+  {"from":"N8","to":"N9","weight":20},
+  {"from":"N9","to":"N10","weight":18},
+  {"from":"N10","to":"N11","weight":9}
 ]
