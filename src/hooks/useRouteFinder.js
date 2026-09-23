@@ -1,75 +1,81 @@
 import { useCallback } from "react";
-import rooms from "../data/rooms.json";
-import nodes from "../data/nodes.json";
-import edges from "../data/edges.json";
-import { findShortestPath } from "../utils/pathfinding";
+import {
+  findGridPath,
+  gridCellToCoordinate,
+  simplifyGridPath,
+} from "../utils/gridPathfinding";
 
-export function useRouteFinder() {
-  const getRoute = useCallback((startRoomId, destinationRoomId) => {
-    const startId = startRoomId.trim().toLowerCase();
-    const destinationId = destinationRoomId.trim().toLowerCase();
+export function useRouteFinder(floorData) {
+  const getRoute = useCallback(
+    (startLocationId, destinationLocationId) => {
+      if (!floorData) {
+        return {
+          success: false,
+          message: "Floor data is still loading.",
+          coordinates: [],
+        };
+      }
 
-    const startRoom = rooms.find((room) => room.id.toLowerCase() === startId);
-    const destinationRoom = rooms.find((room) => room.id.toLowerCase() === destinationId);
+      const startLocation = floorData.locations.find(
+        (location) => location.id === startLocationId,
+      );
+      const destinationLocation = floorData.locations.find(
+        (location) => location.id === destinationLocationId,
+      );
 
-    if (!startRoom || !destinationRoom) {
-      return {
-        success: false,
-        message: "Choose a valid start and destination.",
-        path: [],
-        coordinates: [],
-      };
-    }
+      if (!startLocation || !destinationLocation) {
+        return {
+          success: false,
+          message: "Select both locations from the suggestions.",
+          coordinates: [],
+        };
+      }
 
-    if (startRoom.id === destinationRoom.id) {
+      if (startLocation.id === destinationLocation.id) {
+        return {
+          success: true,
+          message: "You are already at the destination.",
+          floor: floorData.floor,
+          startLocation,
+          destinationLocation,
+          coordinates: [startLocation.entranceCoordinate],
+          turns: 0,
+          gridSteps: 0,
+        };
+      }
+
+      const fullPath = findGridPath(
+        floorData.grid,
+        startLocation.grid,
+        destinationLocation.grid,
+      );
+
+      if (!fullPath.length) {
+        return {
+          success: false,
+          message: "No connected indoor path was found for these locations.",
+          coordinates: [],
+        };
+      }
+
+      const simplifiedPath = simplifyGridPath(fullPath);
+      const coordinates = simplifiedPath.map((cell) =>
+        gridCellToCoordinate(floorData, cell),
+      );
+
       return {
         success: true,
-        message: "You are already at the destination.",
-        path: [startRoom.nodeId],
-        coordinates: [startRoom.entrance],
-        distance: 0,
-        startRoom,
-        destinationRoom,
+        message: "Route ready.",
+        floor: floorData.floor,
+        startLocation,
+        destinationLocation,
+        coordinates,
+        gridSteps: Math.max(0, fullPath.length - 1),
+        turns: Math.max(0, simplifiedPath.length - 2),
       };
-    }
-
-    const result = findShortestPath(
-      nodes,
-      edges,
-      startRoom.nodeId,
-      destinationRoom.nodeId,
-    );
-
-    if (!result.path.length) {
-      return {
-        success: false,
-        message: "No route is available between these rooms.",
-        path: [],
-        coordinates: [],
-      };
-    }
-
-    const routeNodes = result.path
-      .map((nodeId) => nodes.find((node) => node.id === nodeId))
-      .filter(Boolean);
-
-    const coordinates = [
-      startRoom.entrance,
-      ...routeNodes.map((node) => [node.x, node.y]),
-      destinationRoom.entrance,
-    ];
-
-    return {
-      success: true,
-      message: "Route ready.",
-      startRoom,
-      destinationRoom,
-      path: result.path,
-      coordinates,
-      distance: result.distance,
-      estimatedMinutes: Math.max(1, Math.ceil(result.distance / 70)),
-    };
-  }, []);
+    },
+    [floorData],
+  );
 
   return { getRoute };
 }
